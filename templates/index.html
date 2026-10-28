@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetOps Sentinel | Network Monitor</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div>
+            <p class="eyebrow">IT INFRASTRUCTURE MONITORING</p>
+            <h1>NetOps Sentinel</h1>
+            <p class="subtitle">Your home network at a glance.</p>
+        </div>
+        <span class="local-tag">LOCAL MONITOR</span>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h2>Network diagnostics</h2>
+            <p>Check your router, public connectivity and DNS resolution.</p>
+
+            <form action="{{ url_for('check_network') }}" method="POST">
+                <button type="submit">Run network checks</button>
+            </form>
+        </section>
+
+        {% if results is not none %}
+        <section class="results">
+            <div class="results-heading">
+                <h2>Latest results</h2>
+                <p>Checked at {{ checked_at }}</p>
+            </div>
+
+            <div class="device-grid">
+                {% for item in results %}
+                <article class="device-card">
+                    <p class="device-type">NETWORK CHECK</p>
+                    <h3>{{ item.name }}</h3>
+                    <p class="target">{{ item.target }}</p>
+
+                    <span class="status
+                        {% if item.status in ['Online', 'Working'] %}
+                            good
+                        {% else %}
+                            warning
+                        {% endif %}">
+                        {{ item.status }}
+                    </span>
+
+                    <div class="metric">
+                        <span>Response time</span>
+                        <strong>{{ item.latency }}</strong>
+                    </div>
+
+                    <p class="details">{{ item.details }}</p>
+                </article>
+                {% endfor %}
+            </div>
+
+            <p class="note">
+                These are point-in-time checks. A failed ping alone
+                does not prove that internet access is unavailable.
+            </p>
+        </section>
+        {% else %}
+        <section class="empty-state">
+            <h2>Ready to check your network</h2>
+            <p>Select “Run network checks” to collect live results.</p>
+        </section>
+        {% endif %}
+    </main>
+
+    <footer>
+        NetOps Sentinel · Personal IT infrastructure lab
+    </footer>
+</body>
+</html>
